@@ -16,8 +16,6 @@
  */
 package org.apache.kafka.common.config;
 
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.apache.kafka.common.config.types.Password;
 import org.apache.kafka.common.utils.Utils;
 
@@ -33,8 +31,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This class is used for specifying the set of expected configurations. For each configuration, you can specify
@@ -1140,6 +1140,11 @@ public class ConfigDef {
                 throw new ConfigException(name, value, "exceeds maximum list size of [" + maxSize + "].");
             }
         }
+
+        @Override
+        public String toString() {
+            return "List containing maximum of " + maxSize + " elements";
+        }
     }
 
     public static class ConfigKey {
@@ -1238,15 +1243,16 @@ public class ConfigDef {
                 break;
             }
         }
+        String resultFormat = " (" + value + " %s" + (value == 1 ? ")" : "s)");
         switch (i) {
             case 1:
-                return " (" + value + " kibibyte" + (value == 1 ? ")" : "s)");
+                return String.format(resultFormat, "kibibyte");
             case 2:
-                return " (" + value + " mebibyte" + (value == 1 ? ")" : "s)");
+                return String.format(resultFormat, "mebibyte");
             case 3:
-                return " (" + value + " gibibyte" + (value == 1 ? ")" : "s)");
+                return String.format(resultFormat, "gibibyte");
             case 4:
-                return " (" + value + " tebibyte" + (value == 1 ? ")" : "s)");
+                return String.format(resultFormat, "tebibyte");
             default:
                 return "";
         }

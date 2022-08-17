@@ -34,7 +34,9 @@ import org.apache.kafka.streams.processor.TimestampExtractor;
 import org.apache.kafka.streams.processor.internals.StreamsPartitionAssignor;
 import org.apache.kafka.streams.processor.internals.testutil.LogCaptureAppender;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -77,7 +79,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class StreamsConfigTest {
-
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(600);
     private final Properties props = new Properties();
     private StreamsConfig streamsConfig;
 
@@ -1250,6 +1253,14 @@ public class StreamsConfigTest {
                           value, StreamsConfig.CLIENT_TAG_PREFIX, StreamsConfig.MAX_RACK_AWARE_ASSIGNMENT_TAG_VALUE_LENGTH),
             exception.getMessage()
         );
+    }
+
+    @Test
+    public void testInvalidSecurityProtocol() {
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "abc");
+        final ConfigException ce = assertThrows(ConfigException.class,
+                () -> new StreamsConfig(props));
+        assertTrue(ce.getMessage().contains(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
     }
 
     static class MisconfiguredSerde implements Serde<Object> {

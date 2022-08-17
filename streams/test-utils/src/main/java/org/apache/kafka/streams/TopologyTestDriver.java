@@ -496,7 +496,8 @@ public class TopologyTestDriver implements Closeable {
                 TASK_ID,
                 testDriverProducer,
                 streamsConfig.defaultProductionExceptionHandler(),
-                streamsMetrics
+                streamsMetrics,
+                processorTopology
             );
 
             final InternalProcessorContext context = new ProcessorContextImpl(
